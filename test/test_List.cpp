@@ -207,10 +207,29 @@ TEST(List, SKOBKI_MARKA_2222)
     EXPECT_EQ(777, list.popFront());
 }
 
+//нет не надо слов
 
+TEST(List, NEW_5554444774875)
+{
+    ASSERT_NO_THROW(List<int> list ( { 4, 8, 10 }));
+}
 
+TEST(List, NEW_5554444774876)
+{
+    List<int> list{ 4,8,568,10,54 };
+    EXPECT_EQ(54, list.popBack());
+}
 
+TEST(List, NEW_5554444774976)
+{
+    List<int> list{ 4,8,568,10,54 };
+    list.popFront();
+    EXPECT_EQ(8, list.popFront());
+}
 
-
-
-
+TEST(List, NEW_5544444774976)
+{
+    List<int> list{ 4,8,568,10,54 };
+    list.pushFront(777);
+    EXPECT_EQ(777, list.popFront());
+}

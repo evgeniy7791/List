@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 
+
 template<typename T>
 struct Node {
     T value;
@@ -23,6 +24,22 @@ public:
         size = 1;
         head->value = val;
         head->next = nullptr;
+    }
+
+    List(std::initializer_list<T> init_list) {
+        head = new Node<T>;
+		Node<T>* curr = head;
+        auto it = init_list.begin();
+        curr->value = *it;
+        curr->next = nullptr;
+        it++;
+        while (it != init_list.end()) {
+            curr->next = new Node<T>;
+            curr = curr->next;
+            curr->value = *it;
+            curr->next = nullptr;
+            it++;
+        }
     }
 
     List(const List& l1) {
