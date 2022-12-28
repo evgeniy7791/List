@@ -1,253 +1,216 @@
-#include "tmatrix.h"
+#include "List.h"
 
 #include <gtest.h>
 
-TEST(TDynamicVector, can_create_vector_with_positive_length)
+
+TEST(List, can_create_list_1)
 {
-  ASSERT_NO_THROW(TDynamicVector<int> v(5));
+    ASSERT_NO_THROW(List<int> list);
 }
 
-TEST(TDynamicVector, cant_create_too_large_vector)
+
+TEST(List, can_create_list_2)
 {
-  ASSERT_ANY_THROW(TDynamicVector<int> v(MAX_VECTOR_SIZE + 1));
+    ASSERT_NO_THROW(List<int> list(15));
 }
 
-TEST(TDynamicVector, throws_when_create_vector_with_negative_length)
+TEST(List, can_create_list_3)
 {
-  ASSERT_ANY_THROW(TDynamicVector<int> v(-5));
+
+    ASSERT_NO_THROW(List<int> list(15));
 }
 
-TEST(TDynamicVector, can_create_copied_vector)
+TEST(List, isEmpty)
 {
-  TDynamicVector<int> v(10);
-
-  ASSERT_NO_THROW(TDynamicVector<int> v1(v));
+    List<int> list(15);
+    EXPECT_EQ(0, list.isEmpty());
 }
 
-TEST(TDynamicVector, can_create_moved_vector)
+TEST(List, isEmpty2)
 {
-	TDynamicVector<int> v(10);
-
-	ASSERT_NO_THROW(TDynamicVector<int> (std::move(v)));
+    List<int> list(15);
+    list.popBack();
+    EXPECT_EQ(1, list.isEmpty());
 }
 
-TEST(TDynamicVector, copied_vector_is_equal_to_source_one)
+TEST(List, isEmpty3)
 {
-	TDynamicVector<int> v(5);
-	TDynamicVector<int> c(v);
-	EXPECT_EQ(v, c);
+    List<int> list(15);
+    list.popFront();
+    EXPECT_EQ(1, list.isEmpty());
 }
 
-TEST(TDynamicVector, moved_vector_is_equal_to_source_one)
-{
-	TDynamicVector<int> v(5);
-	v[3] = 1;
-	TDynamicVector<int> c(v);
-	TDynamicVector<int> m(std::move(v));
 
-	EXPECT_EQ(m, c);
+TEST(List, get_size_1)
+{
+    List<int> list(7);
+    list.pushBack(30);
+    list.pushBack(12);
+    EXPECT_EQ(list.getSize(), 3);
 }
 
-TEST(TDynamicVector, copied_vector_has_its_own_memory)
+TEST(List, get_size_2)
 {
-	TDynamicVector<int>* v = new TDynamicVector<int>(5);
-	TDynamicVector<int>* v1 = new TDynamicVector<int>(*v);
-	delete v;
-
-	ASSERT_NO_THROW(delete v1);
+    List<int> list(5);
+    list.pushBack(30);
+    list.pushBack(12);
+    list.popFront();
+    EXPECT_EQ(list.getSize(), 2);
 }
 
-TEST(TDynamicVector, can_get_size)
+TEST(List, pushback)
 {
-  TDynamicVector<int> v(4);
-
-  EXPECT_EQ(4, v.size());
+    List<int> list;
+    list.pushBack(34);
+    EXPECT_EQ(list.popBack(), 34);
 }
 
-//TEST(TDynamicVector, can_set_and_get_element)
-//{
-//  TDynamicVector<int> v(4);
-//  v[0] = 4;
-//
-//  EXPECT_EQ(4, v[0]);
-//}
-
-TEST(TDynamicVector, throws_when_set_element_with_negative_index)
+TEST(List, can_create_copy_list)
 {
-	TDynamicVector<int> v(5);
-	ASSERT_ANY_THROW(v.at(-1) = 0);
+    List<int> list;
+    list.pushBack(3);
+    ASSERT_NO_THROW(List<int> list2(list));
 }
 
-TEST(TDynamicVector, throws_when_set_element_with_too_large_index)
+TEST(List, can_not_delete_from_empty_list)
 {
-	TDynamicVector<int> v(5);
-	ASSERT_ANY_THROW(v.at(6) = 0);
+    List<int> list;
+    EXPECT_ANY_THROW(list.popFront());
 }
 
-TEST(TDynamicVector, can_assign_vector_to_itself)
+TEST(List, can_assign_list_to_another_list)
 {
-	TDynamicVector<int> v1(5);
-	v1[1] = 1;
-	TDynamicVector<int> v2(5);
-	v2 = v1;
-	v1 = v1;
-	EXPECT_EQ(v1, v2);
+    List<int> list;
+    list.pushBack(3);
+    List<int> list2;
+    ASSERT_NO_THROW(list2 = list);
 }
 
-TEST(TDynamicVector, can_assign_vectors_of_equal_size)
+
+TEST(List, push_pop1)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(5);
-	v1[1] = 1;
-	v2 = v1;
-	EXPECT_EQ(v1, v2);
+    List<int> list(5);
+    list.pushBack(10);
+    list.pushBack(4);
+    list.pushFront(2);
+    EXPECT_EQ(2, list.popFront());
 }
 
-TEST(TDynamicVector, can_move_vectors_of_equal_size)
+TEST(List, insertNext)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(5);
-	v1[1] = 1;
-	TDynamicVector<int> v3(v1);
-	v2 = std::move(v1);
-
-	EXPECT_EQ(v3, v2);
+    List<int> list;
+    list.pushBack(356);
+    list.pushBack(4654);
+    list.pushFront(2);
+    list.insertNext(list.find(356),12);
+    list.popBack();
+    EXPECT_EQ(12, list.popBack());
 }
 
-TEST(TDynamicVector, assign_operator_change_vector_size)
+TEST(List, deleteNext)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(3);
-	v2 = v1;
-	EXPECT_EQ(5, v2.size());
+    List<int> list;
+    list.pushBack(356);
+    list.pushBack(4654);
+    list.pushFront(2);
+    list.deleteNext(list.find(2));
+    list.popFront();
+    EXPECT_EQ(4654, list.popFront());
 }
 
-TEST(TDynamicVector, move_operator_change_vector_size)
+TEST(List, reverse1)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(3);
-	v2 = std::move(v1);
-	EXPECT_EQ(5, v2.size());
+    List<int> list;
+    list.pushBack(3);
+    list.pushBack(4);
+    list.pushFront(2);
+    list.reverse();
+    EXPECT_EQ(4, list.popFront());
 }
 
-TEST(TDynamicVector, can_assign_vectors_of_different_size)
+TEST(List, reverse2)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(3);
-	v1[1] = 1;
-	v2 = v1;
-	EXPECT_EQ(v1, v2);
+    List<int> list;
+    list.pushBack(3);
+    list.pushBack(4);
+    list.pushFront(2);
+    list.reverse();
+    list.reverse();
+    EXPECT_EQ(2, list.popFront());
 }
 
-TEST(TDynamicVector, can_move_vectors_of_different_size)
+TEST(List, push_pop)
 {
-	TDynamicVector<int> v1(5);
-	v1[1] = 1;
-	TDynamicVector<int> v2(v1);
-	TDynamicVector<int> v3(10);
-	v3 = std::move(v1);
-	EXPECT_EQ(v3, v2);
+    List<int> list(8);
+    list.pushBack(3);
+    list.pushBack(4);
+    list.pushFront(2); 
+    list.popBack();
+    list.popFront();
+
+    EXPECT_EQ(8, list.popFront());
+    EXPECT_EQ(3, list.popFront());
 }
 
-TEST(TDynamicVector, compare_equal_vectors_return_true)
+TEST(List, getSize3)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(5);
-	v1[1] = 1;
-	v2 = v1;
-	EXPECT_EQ(v1, v2);
+    List<int> list(8);
+    list.pushBack(3);
+    list.pushBack(4);
+    list.pushFront(2);
+    list.popBack();
+    list.popFront();
+
+    EXPECT_EQ(2, list.getSize());
 }
 
-TEST(TDynamicVector, compare_vector_with_itself_return_true)
+TEST(List, ex1)
 {
-	TDynamicVector<int> v(5);
-	EXPECT_EQ(v, v);
+    List<int> list;
+    ASSERT_ANY_THROW(list.popBack());
 }
 
-TEST(TDynamicVector, vectors_with_different_size_are_not_equal)
+TEST(List, ex2)
 {
-	TDynamicVector<int> v1(5);
-	TDynamicVector<int> v2(3);
-	EXPECT_NE(v1, v2);
+    List<int> list;
+    ASSERT_ANY_THROW(list.popFront());
 }
 
-TEST(TDynamicVector, can_add_scalar_to_vector)
+TEST(List, ex3)
 {
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v1[0] = 1.0;
-	v1[1] = 1.0;
-	EXPECT_EQ(v1, v2 + 1.0);
+    List<int> list;
+    ASSERT_NO_THROW(list.clear());
 }
 
-TEST(TDynamicVector, can_subtract_scalar_from_vector)
+TEST(List, find)
 {
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v2[0] = 1.0;
-	v2[1] = 1.0;
-	EXPECT_EQ(v1, v2 - 1.0);
+    List<int> list(8);
+    list.pushBack(3);
+    list.pushBack(4);
+    EXPECT_EQ(3, list.find(3)->value);
 }
 
-TEST(TDynamicVector, can_multiply_scalar_by_vector)
+TEST(List, SKOBKI_MARKA_1)
 {
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v2[0] = 2.0;
-	v2[1] = 2.0;
-	EXPECT_EQ(v1+4.0, v2 * 2);
+    List<int> list(8);
+    list.pushBack(3);
+    list.pushBack(4);
+    EXPECT_EQ(3, list[1]);
 }
 
-TEST(TDynamicVector, can_add_vectors_with_equal_size)
+TEST(List, SKOBKI_MARKA_2222)
 {
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v2[0] = 1.0;
-	v2[1] = 1.0;
-	v1 = v2 * 2.0;
-	EXPECT_EQ(v1 + v2, v2*3.0);
+    List<int> list(8);
+    list.pushBack(3);
+    list.pushBack(4);
+    list[0] = 777;
+    EXPECT_EQ(777, list.popFront());
 }
 
-TEST(TDynamicVector, cant_add_vectors_with_not_equal_size)
-{
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(3);
-	ASSERT_ANY_THROW(v2 + v1);
-}
 
-TEST(TDynamicVector, can_subtract_vectors_with_equal_size)
-{
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v2[0] = 1.0;
-	v2[1] = 1.0;
-	v1 = v2 * 2.0;
-	EXPECT_EQ(v1 -v2, v2);
-}
 
-TEST(TDynamicVector, cant_subtract_vectors_with_not_equal_size)
-{
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(3);
-	ASSERT_ANY_THROW(v1 - v2);
-}
 
-TEST(TDynamicVector, can_multiply_vectors_with_equal_size)
-{
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(2);
-	v2[0] = 1.0;
-	v2[1] = 1.0;
-	v1 = v2 * 2.0;
-	EXPECT_EQ(v1 * v2, 4.0);
-}
 
-TEST(TDynamicVector, cant_multiply_vectors_with_not_equal_size)
-{
-	TDynamicVector<double> v1(2);
-	TDynamicVector<double> v2(3);
-	v1[0] = 1.0;
-	v2[0] = 2.0;
-	ASSERT_ANY_THROW(v1 * v2);
-}
+
+
 

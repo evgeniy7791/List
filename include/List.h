@@ -25,21 +25,6 @@ public:
         head->next = nullptr;
     }
 
-    List(T* arr, size_t len) {
-        head = new Node<T>;
-        head->value = arr[0];
-        head->next = nullptr;
-        size = 1;
-        Node<T>* curr = head;
-        for (size_t i = 1; i < len; i++) {
-            curr->next = new Node<T>;
-            curr = curr->next;
-            curr->value = arr[i];
-            curr->next = nullptr;
-            size++;
-        }
-    }
-
     List(const List& l1) {
         if (l1.head == nullptr) {
             head = nullptr;
@@ -84,10 +69,10 @@ public:
     }
 
     void pushFront(T val) {
-        auto* temp = new Node<T>;
+        Node<T>* temp = new Node<T>;
         temp->value = val;
         temp->next = head;
-        temp = head;
+        head = temp;
         size++;
     }
 
@@ -127,11 +112,18 @@ public:
         }
         size--;
         auto* curr = head;
-        while (curr->next) {
+        if (!head->next) {
+            T val = head->value;
+            delete head;
+            head = nullptr;
+            return val;
+        }
+        while (curr->next->next) {
             curr = curr->next;
         }
-        T val = curr->value;
-        delete curr;
+        T val = curr->next->value;
+        delete curr->next;
+        curr->next = nullptr;
         return val;
     }
 
@@ -140,7 +132,7 @@ public:
             return *this;
         }
 
-        delete this;
+        clear();
         if (l1.head == nullptr) {
             head = nullptr;
             size = 0;
@@ -150,8 +142,8 @@ public:
         head = new Node<T>;
         head->value = l1.head->value;
         head->next = nullptr;
-        size = 1;
         auto* curr = head;
+            size = 1;
         auto* l1_curr = l1.head->next;
         while (l1_curr) {
             curr->next = new Node<T>;
@@ -161,10 +153,11 @@ public:
             l1_curr = l1_curr->next;
             size++;
         }
+        return *this;
     }
 
     void reverse() {
-        Node<T>* curr, next, prev = nullptr;
+        Node<T>* curr, *next, *prev = nullptr;
         curr = head;
         while (curr) {
             next = curr->next;
@@ -175,6 +168,7 @@ public:
         head = prev;
     }
 
+    
     T& operator [] (size_t index) {
         if (index >= size) {
             throw "List index out of range";
@@ -200,5 +194,14 @@ public:
         Node<T>* temp = prev->next;
         prev->next = prev->next->next;
         delete temp;
+    }
+
+    Node<T>* find(T target) {
+        Node<T>* curr = head;
+        while (curr) {
+            if (curr->value == target) return curr;
+            curr = curr->next;
+        }
+        return nullptr;
     }
 };
